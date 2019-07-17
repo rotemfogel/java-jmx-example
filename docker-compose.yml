@@ -1,0 +1,27 @@
+version: '3.7'
+x-default-opts: &default-opts
+  logging:
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  agent:
+    <<: *default-opts
+    image: jmx-test:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: agent
+    hostname: agent
+    ports:
+      - 9999:9999
+
+  collectd:
+    image: collectd:latest
+    container_name: collectd
+    hostname: collectd
+    environment:
+      CARBON_PORT: 2003
+    depends_on:
+      - agent
